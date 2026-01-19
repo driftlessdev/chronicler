@@ -1,0 +1,13 @@
+## Interface: 120000
+## Title: Chronicler
+## Notes: Document your leveling journey.
+## Author: Loresbane
+## Version: 0.1
+## OptionalDeps: Ace3
+## SavedVariables: ChroniclerDB
+## OptionalDeps: _DebugLog
+
+embeds.xml
+
+Init.lua
+Historian.lua

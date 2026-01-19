@@ -40,4 +40,9 @@ luac.out
 *.x86_64
 *.hex
 
+# VS Code
+.vscode/*
+
+# Built Visual Studio Code Extensions
+*.vsix
 
