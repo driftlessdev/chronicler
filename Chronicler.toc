@@ -10,7 +10,8 @@
 embeds.xml
 
 Init.lua
-Options.lua
-Core.lua
 Modules/Leveling.lua
 Modules/Others.lua
+Modules/Bosses.lua
+Options.lua
+Core.lua

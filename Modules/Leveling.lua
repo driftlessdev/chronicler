@@ -1,5 +1,37 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
+
+function Chronicler:BuildLevelOptions(groupArgs,configOrder)
+    groupArgs.leveling = {
+        order = configOrder,
+        type = "group",
+        name = "Leveling",
+        inline = true;
+        args = {
+            screenshot = {
+                order = 1,
+                type = "toggle",
+                name = "Screenshot",
+                desc = "Take a screenshot on leveling",
+            },
+            showTime = {
+                order = 2,
+                type = "toggle",
+                name = "Show Level Timing",
+                desc = "Show how long it took to reach the new level",
+                disabled = function () return not self.db.profile.settings.leveling.screenshot end
+            }
+        }
+    }
+end
+
+function Chronicler:BuildLevelingDefaults(settingNode)
+    settingNode.leveling = {
+        screenshot = true,
+        showTime = true,
+    }
+end
+
 function Chronicler:levelUpHandler(_eventName, newLevel, ...)
     self:TraceFormat("Player Level %s, Event %s", newLevel, _eventName);
     self.session.dingLevel = newLevel

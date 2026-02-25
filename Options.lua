@@ -1,5 +1,8 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
+function Chronicler:ProfileSettings()
+    return self.db.profile.settings
+end
 
 function Chronicler:SetOption(info, value)
     local opts = Chronicler.db.profile;
@@ -39,39 +42,15 @@ function Chronicler:GetOption(info)
 end
 
 function Chronicler:GetDefaults()
+
+    local settingsNode = {}
+    self:BuildOtherDefaults(settingsNode)
+    self:BuildBossDefaults(settingsNode)
+    self:BuildLevelingDefaults(settingsNode)
+
     local defaults = {
         profile = {
-            settings = {
-                leveling = {
-                    screenshot = true,
-                    showTime = true,
-                },
-                bosses = {
-                    screenshot = true,
-                    onlyFirst = true,
-                    dungeon = {
-                        follower = false,
-                        normal = true,
-                        heroic = true,
-                        mythic = true,
-                    },
-                    raid = {
-                        lfr = true,
-                        normal = true,
-                        heroic = true,
-                        mythic = true,
-                    }
-                },
-                other = {
-                    death = {
-                        screenshot = true,
-                        showCount = true,
-                    },
-                    achievement = {
-                        screenshot = true,
-                    },
-                },
-            },
+            settings = settingsNode,
         },
     }
 
@@ -80,6 +59,11 @@ end
 
 
 function Chronicler:BuildOptionTable()
+
+    local settingsArgs = {}
+    self:BuildLevelOptions(settingsArgs,1)
+    self:BuildBossOptions(settingsArgs,2)
+    self:BuildOtherOptions(settingsArgs,3)
 
     local options = {
         name = "Chronicler",
@@ -94,11 +78,7 @@ function Chronicler:BuildOptionTable()
                 type = "group",
                 name = "Settings",
                 childGroups = "tab",
-                args = {
-                    leveling = self:BuildLevelOptions(1),
-                    bosses = self:BuildBossOptions(2),
-                    other = self:BuildOtherOptions(3),
-                }
+                args = settingsArgs
             }
         }
     }
@@ -116,172 +96,6 @@ function Chronicler:InitConfig()
 
 end
 
-function Chronicler:BuildLevelOptions(configOrder)
-    local options = {
-        order = configOrder,
-        type = "group",
-        name = "Leveling",
-        inline = true;
-        args = {
-            screenshot = {
-                order = 1,
-                type = "toggle",
-                name = "Screenshot",
-                desc = "Take a screenshot on leveling",
-            },
-            showTime = {
-                order = 2,
-                type = "toggle",
-                name = "Show Level Timing",
-                desc = "Show how long it took to reach the new level",
-                disabled = function () return not self.db.profile.settings.leveling.screenshot end
-            }
-        }
-    }
 
-    return options
-end
 
-function Chronicler:BuildBossOptions(configOrder)
-    local options = {
-        order = configOrder,
-        type = "group",
-        name = "Boss Kills",
-        inline = true;
-        args = {
-            screenshot = {
-                order = 1,
-                type = "toggle",
-                name = "Screenshot",
-                desc = "Take a screenshot on a boss kill.",
-            },
-            onlyFirst = {
-                order = 2,
-                type = "toggle",
-                name = "First Kills Only",
-                desc = "Only screenshot first time kill is detected.",
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end
-            },
-            dungeon = {
-                order = 3,
-                type = "group",
-                name = "Dungeons",
-                desc = "Which dungeons to take boss kill screenshots.",
-                inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
-                args = {
-                    follower = {
-                        order = 1,
-                        type = "toggle",
-                        name = "Follower",
-                        desc = "Boss kills on follower dungeon difficulty",
-                    },
-                    normal = {
-                        order = 2,
-                        type = "toggle",
-                        name = "Normal",
-                        desc = "Boss kills on normal dungeon difficulty",
-                    },
-                    heroic = {
-                        order = 3,
-                        type = "toggle",
-                        name = "Heroic",
-                        desc = "Boss kills on heroic dungeon difficulty",
-                    },
-                    mythic = {
-                        order = 4,
-                        type = "toggle",
-                        name = "Mythic",
-                        desc = "Boss kills on mythic dungeon difficulty",
-                    },
-                }
-            },
-            raid = {
-                order = 4,
-                type = "group",
-                name = "Raids",
-                desc = "Which raids to take boss kill screenshots.",
-                inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
-                args = {
-                    lfr = {
-                        order = 1,
-                        type = "toggle",
-                        name = "LFR",
-                        desc = "Boss kills on LFR difficulty",
-                    },
-                    normal = {
-                        order = 2,
-                        type = "toggle",
-                        name = "Normal",
-                        desc = "Boss kills on normal raid difficulty",
-                    },
-                    heroic = {
-                        order = 3,
-                        type = "toggle",
-                        name = "Heroic",
-                        desc = "Boss kills on heroic raid difficulty",
-                    },
-                    mythic = {
-                        order = 4,
-                        type = "toggle",
-                        name = "Mythic",
-                        desc = "Boss kills on mythic raid difficulty",
-                    },
-                }
-            }
-        }
-    }
 
-    return options
-end
-
-function Chronicler:BuildOtherOptions(configOrder)
-    local options = {
-        order = configOrder,
-        type = "group",
-        name = "Other",
-        inline = true;
-        args = {
-            death = {
-                order = 1,
-                type = "group",
-                name = "Death",
-                desc = "When you die, memorialize the moment.",
-                inline = true,
-                args = {
-                    screenshot = {
-                        order = 1,
-                        type = "toggle",
-                        name = "Screenshot",
-                        desc = "Say cheese upon death.",
-                    },
-                    showCount = {
-                        order = 2,
-                        type = "toggle",
-                        name = "Show Level Death Count",
-                        desc = "Show the number of times you've died this level.",
-                        disabled = function () return not self.db.profile.settings.other.death.screenshot end,
-                    },
-                }
-            },
-            achievement = {
-                order = 2,
-                type = "group",
-                name = "Achievements",
-                desc = "When you get props, screenshot",
-                inline = true,
-                args = {
-                    screenshot = {
-                        order = 1,
-                        type = "toggle",
-                        name = "Screenshot",
-                        desc = "Record the moment",
-                    },
-                }
-            }
-        }
-    }
-
-    return options
-end
