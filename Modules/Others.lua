@@ -75,8 +75,8 @@ end
 
 function Chronicler:HandleDeath()
 
-    local settings = self:ProfileSettings()
-    if not settings.other.death.screenshot then
+    local settings = self:ProfileSettings().other.death
+    if not settings.screenshot then
         return
     end
 
@@ -92,7 +92,9 @@ function Chronicler:HandleDeath()
     self.db.char.deathData.count = count
     local message = string.format("You've died %s times as level %s",count, curLevel)
     Chronicler:TraceFormat("Death msg: %s",message)
-    RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
+    if settings.showCount then
+        RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])    
+    end
 
     self:QueueScreenshot(1)
 end
