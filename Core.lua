@@ -5,9 +5,11 @@ function Chronicler:SlashCommandHandler(command)
 end
 
 function Chronicler:DebugHandler(command)
-    --if command == "player" then
+    if command == "player" then
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",random(100))
-    --end
+    elseif command == "death" then
+        Chronicler:HandleDeath()
+    end
 end
 
 function Chronicler:OnInitialize()
@@ -35,4 +37,9 @@ function Chronicler:OnEnable()
         Chronicler:TraceFormat("Player level not same as saved.")
         Chronicler:ScheduleTimer("LoadTimePlayed",2)
     end
+end
+
+function Chronicler:Screenshot()
+    Chronicler:TraceFormat("Say cheese!")
+    Screenshot()
 end

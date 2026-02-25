@@ -12,4 +12,5 @@ embeds.xml
 Init.lua
 Options.lua
 Core.lua
-Historian.lua
+Modules/Leveling.lua
+Modules/Others.lua
