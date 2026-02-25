@@ -10,4 +10,6 @@
 embeds.xml
 
 Init.lua
+Options.lua
+Core.lua
 Historian.lua
