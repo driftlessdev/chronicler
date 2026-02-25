@@ -39,7 +39,35 @@ function Chronicler:OnEnable()
     end
 end
 
+--[[
+If multiple events happen in a short timeframe (boss + achievements) only
+let 1 active timer run with a cooldown period.
+]]--
+function Chronicler:QueueScreenshot(delaySeconds)
+    if self.session.screenshot == nil then
+        self.session.screenshot = {}
+    end
+    local lastRequestInst = self.session.screenshot.lastRequest
+    local curInst = time()
+    self:TraceFormat("Screenshot in %s seconds.", delaySeconds)
+
+    -- Wait 5 seconds between screenshot requests
+    if lastRequestInst ~= nil and (curInst - lastRequestInst) < 4 then
+        self:TraceFormat("Skipped screenshot due to cooldown of %s",(curInst - lastRequestInst))
+        return
+    elseif lastRequestInst == nil then
+        self:TraceFormat("First screenshot of the session")
+    else
+        self:TraceFormat("Screenshot cooldown passed - %s",(curInst - lastRequestInst))
+    end
+
+    delaySeconds = delaySeconds or 2
+    self:ScheduleTimer("Screenshot",delaySeconds)
+    self.session.screenshot.lastRequest = time()
+
+end
+
 function Chronicler:Screenshot()
-    Chronicler:TraceFormat("Say cheese!")
+    self:TraceFormat("Say cheese!")
     Screenshot()
 end

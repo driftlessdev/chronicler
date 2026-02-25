@@ -62,21 +62,21 @@ end
 
 function Chronicler:HandleAchievement(_eventName, achievementID, alreadyEarned)
 
-    if not self.db.profile.settings.other.achievement.screenshot then
+    local settings = self:ProfileSettings()
+    if not settings.other.achievement.screenshot then
         return
     end
 
-    Chronicler:TraceFormat("Achievement: %s, earned? %s" ,achievementID, alreadyEarned)
+    self:TraceFormat("Achievement: %s, earned? %s" ,achievementID, alreadyEarned)
 
-    Chronicler:ScheduleTimer("Screenshot",1)
+    self:QueueScreenshot(1)
 
 end
 
 function Chronicler:HandleDeath()
 
-    Chronicler:TraceFormat("DEATH!")
-
-    if not self.db.profile.settings.other.death.screenshot then
+    local settings = self:ProfileSettings()
+    if not settings.other.death.screenshot then
         return
     end
 
@@ -94,9 +94,8 @@ function Chronicler:HandleDeath()
     Chronicler:TraceFormat("Death msg: %s",message)
     RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])
 
-    Chronicler:ScheduleTimer("Screenshot",1)
+    self:QueueScreenshot(1)
 end
 
--- PLAYER_DEAD
 Chronicler:RegisterEvent("PLAYER_DEAD", "HandleDeath")
 Chronicler:RegisterEvent("ACHIEVEMENT_EARNED", "HandleAchievement")

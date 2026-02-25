@@ -56,7 +56,7 @@ function Chronicler:timePlayedHandler(_eventName, ...)
     end
 
 end
-
+-- [ ] Update handling for new characters to check total time played
 function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
     local newLevel = UnitLevel("player")
     local oldLevelInfo = self.db.char.currentLevel
@@ -109,15 +109,11 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
             RaidNotice_AddMessage(RaidWarningFrame, message, ChatTypeInfo["RAID_WARNING"])
             self:Print(message)
         end
-        Chronicler:ScheduleTimer("RememberTheMoment",2)
+
+        self:QueueScreenshot(1)
     end
 
     self.session.dingLevel = nil
-end
-
-function Chronicler:RememberTheMoment()
-    Chronicler:TraceFormat("Say cheese!")
-    Screenshot()
 end
 
 function Chronicler:InitLevelInfo(totalplayedSecs, levelplayedSecs, lateStart)
