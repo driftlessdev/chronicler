@@ -1,4 +1,5 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
+local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
 
 function Chronicler:BuildLevelOptions(groupArgs,configOrder)
@@ -11,14 +12,14 @@ function Chronicler:BuildLevelOptions(groupArgs,configOrder)
             screenshot = {
                 order = 1,
                 type = "toggle",
-                name = "Screenshot",
-                desc = "Take a screenshot on leveling",
+                name = TXT["Screenshot"],
+                desc = TXT["Take a screenshot on leveling"],
             },
             showTime = {
                 order = 2,
                 type = "toggle",
-                name = "Show Level Timing",
-                desc = "Show how long it took to reach the new level",
+                name = TXT["Show Level Timing"],
+                desc = TXT["Show how long it took to reach the new level"],
                 disabled = function () return not self.db.profile.settings.leveling.screenshot end
             }
         }
@@ -41,7 +42,7 @@ end
 function Chronicler:LoadTimePlayed()
     self:TraceFormat("Requesting played time")
     self:RegisterEvent("TIME_PLAYED_MSG", "timePlayedHandler")
-    RequestTimePlayed() -- TIME_PLAYED_MSG event when collected
+    RequestTimePlayed()
 end
 
 function Chronicler:timePlayedHandler(_eventName, ...)
@@ -94,20 +95,18 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
         self:TraceFormat("Days %d, Hours %d, Mins %d, Secs: %s, Played: %d", days, hours, mins, secs, oldLevelInfo.playedSecs)
         local levelMessage = ""
         if days > 0 then
-            levelMessage = string.format("Level %d in %d days, %d hours, and %d minutes!",newLevel,days,hours,mins)
+            levelMessage = string.format(TXT["Level %d in %d days, %d hours, and %d minutes!"],newLevel,days,hours,mins)
         elseif hours > 0 then
-            levelMessage = string.format("Level %d in %d hours, and %d minutes!",newLevel,hours,mins)
+            levelMessage = string.format(TXT["Level %d in %d hours, and %d minutes!"],newLevel,hours,mins)
         elseif mins > 0 then
-            levelMessage = string.format("Level %d in %d minutes!",newLevel,mins)
+            levelMessage = string.format(TXT["Level %d in %d minutes!"],newLevel,mins)
         elseif secs > 0 then
-            levelMessage = string.format("Leveled blazing fast to %d in %d seconds!",newLevel,secs)
+            levelMessage = string.format(TXT["Leveled blazing fast to %d in %d seconds!"],newLevel,secs)
         end
         RaidNotice_AddMessage(RaidWarningFrame, levelMessage, ChatTypeInfo["RAID_WARNING"])
-        self:Print(levelMessage)
+        self:TraceFormat(levelMessage)
         if oldLevelInfo.partial then
-            local message = "- Level Data Incomplete -"
-            RaidNotice_AddMessage(RaidWarningFrame, message, ChatTypeInfo["RAID_WARNING"])
-            self:Print(message)
+            self:TraceFormat("Level data was incomplete")
         end
 
         self:QueueScreenshot(1)

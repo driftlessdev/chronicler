@@ -1,4 +1,5 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
+local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
 function Chronicler:BuildBossDefaults(settingNode)
     settingNode.bosses = {
@@ -24,93 +25,93 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
     groupArgs.bosses = {
         order = configOrder,
         type = "group",
-        name = "Boss Kills",
+        name = TXT["Boss Kills"],
         inline = true;
         args = {
             screenshot = {
                 order = 1,
                 type = "toggle",
-                name = "Screenshot",
-                desc = "Take a screenshot on a boss kill.",
+                name = TXT["Screenshot"],
+                desc = TXT["Take a screenshot on a boss kill."],
             },
             onlyFirst = {
                 order = 2,
                 type = "toggle",
-                name = "First Kills Only",
-                desc = "Only screenshot first time kill is detected.",
+                name = TXT["First Kills Only"],
+                desc = TXT["Only screenshot first time kill is detected."],
                 disabled = function () return not self.db.profile.settings.bosses.screenshot end
             },
             dungeon = {
                 order = 3,
                 type = "group",
-                name = "Dungeons",
-                desc = "Which dungeons to take boss kill screenshots.",
+                name = TXT["Dungeons"],
+                desc = TXT["Which dungeons to take boss kill screenshots."],
                 inline = true,
                 disabled = function () return not self.db.profile.settings.bosses.screenshot end,
                 args = {
                     follower = {
                         order = 1,
                         type = "toggle",
-                        name = "Follower",
-                        desc = "Boss kills on follower dungeon difficulty",
+                        name = TXT["Follower"],
+                        desc = TXT["Boss kills on follower dungeon difficulty"],
                     },
                     normal = {
                         order = 2,
                         type = "toggle",
-                        name = "Normal",
-                        desc = "Boss kills on normal dungeon difficulty",
+                        name = TXT["Normal"],
+                        desc = TXT["Boss kills on normal dungeon difficulty"],
                     },
                     heroic = {
                         order = 3,
                         type = "toggle",
-                        name = "Heroic",
-                        desc = "Boss kills on heroic dungeon difficulty",
+                        name = TXT["Heroic"],
+                        desc = TXT["Boss kills on heroic dungeon difficulty"],
                     },
                     mythic = {
                         order = 4,
                         type = "toggle",
-                        name = "Mythic",
-                        desc = "Boss kills on mythic dungeon difficulty",
+                        name = TXT["Mythic"],
+                        desc = TXT["Boss kills on mythic dungeon difficulty"],
                     },
                 }
             },
             raid = {
                 order = 4,
                 type = "group",
-                name = "Raids",
-                desc = "Which raids to take boss kill screenshots.",
+                name = TXT["Raids"],
+                desc = TXT["Which raids to take boss kill screenshots."],
                 inline = true,
                 disabled = function () return not self.db.profile.settings.bosses.screenshot end,
                 args = {
                     story = {
                         order = 1,
                         type = "toggle",
-                        name = "Story mode",
-                        desc = "Boss kills on story mode difficulty",
+                        name = TXT["Story mode"],
+                        desc = TXT["Boss kills on story mode difficulty"],
                     },
                     lfr = {
                         order = 2,
                         type = "toggle",
-                        name = "LFR",
-                        desc = "Boss kills on LFR difficulty",
+                        name = TXT["LFR"],
+                        desc = TXT["Boss kills on LFR difficulty"],
                     },
                     normal = {
                         order = 3,
                         type = "toggle",
-                        name = "Normal",
-                        desc = "Boss kills on normal raid difficulty",
+                        name = TXT["Normal"],
+                        desc = TXT["Boss kills on normal raid difficulty"],
                     },
                     heroic = {
                         order = 4,
                         type = "toggle",
-                        name = "Heroic",
-                        desc = "Boss kills on heroic raid difficulty",
+                        name = TXT["Heroic"],
+                        desc = TXT["Boss kills on heroic raid difficulty"],
                     },
                     mythic = {
                         order = 5,
                         type = "toggle",
-                        name = "Mythic",
-                        desc = "Boss kills on mythic raid difficulty",
+                        name = TXT["Mythic"],
+                        desc = TXT["Boss kills on mythic raid difficulty"],
                     },
                 }
             }

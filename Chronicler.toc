@@ -9,6 +9,8 @@
 
 embeds.xml
 
+Locales/Locale-enUS.lua
+
 Init.lua
 Modules/Leveling.lua
 Modules/Others.lua

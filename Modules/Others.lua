@@ -1,30 +1,31 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
+local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
 function Chronicler:BuildOtherOptions(groupArgs, configOrder)
     groupArgs.other = {
         order = configOrder,
         type = "group",
-        name = "Other",
+        name = TXT["Other"],
         inline = true;
         args = {
             death = {
                 order = 1,
                 type = "group",
-                name = "Death",
-                desc = "When you die, memorialize the moment.",
+                name = TXT["Death"],
+                desc = TXT["When you die, memorialize the moment."],
                 inline = true,
                 args = {
                     screenshot = {
                         order = 1,
                         type = "toggle",
-                        name = "Screenshot",
-                        desc = "Say cheese upon death.",
+                        name = TXT["Screenshot"],
+                        desc = TXT["Say cheese upon death."],
                     },
                     showCount = {
                         order = 2,
                         type = "toggle",
-                        name = "Show Level Death Count",
-                        desc = "Show the number of times you've died this level.",
+                        name = TXT["Show Level Death Count"],
+                        desc = TXT["Show the number of times you've died this level."],
                         disabled = function () return not self.db.profile.settings.other.death.screenshot end,
                     },
                 }
@@ -32,15 +33,15 @@ function Chronicler:BuildOtherOptions(groupArgs, configOrder)
             achievement = {
                 order = 2,
                 type = "group",
-                name = "Achievements",
-                desc = "When you get props, screenshot",
+                name = TXT["Achievements"],
+                desc = TXT["When you get props, screenshot"],
                 inline = true,
                 args = {
                     screenshot = {
                         order = 1,
                         type = "toggle",
-                        name = "Screenshot",
-                        desc = "Record the moment",
+                        name = TXT["Screenshot"],
+                        desc = TXT["Record the moment"],
                     },
                 }
             }
@@ -90,7 +91,7 @@ function Chronicler:HandleDeath()
 
     local count = self.db.char.deathData.count + 1
     self.db.char.deathData.count = count
-    local message = string.format("You've died %s times as level %s",count, curLevel)
+    local message = string.format(TXT["Death #%s as level %s"],count, curLevel)
     Chronicler:TraceFormat("Death msg: %s",message)
     if settings.showCount then
         RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])    
