@@ -11,6 +11,7 @@ function Chronicler:BuildBossDefaults(settingNode)
             mythic = true,
         },
         raid = {
+            story = false,
             lfr = true,
             normal = true,
             heroic = true,
@@ -81,26 +82,32 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 inline = true,
                 disabled = function () return not self.db.profile.settings.bosses.screenshot end,
                 args = {
-                    lfr = {
+                    story = {
                         order = 1,
+                        type = "toggle",
+                        name = "Story mode",
+                        desc = "Boss kills on story mode difficulty",
+                    },
+                    lfr = {
+                        order = 2,
                         type = "toggle",
                         name = "LFR",
                         desc = "Boss kills on LFR difficulty",
                     },
                     normal = {
-                        order = 2,
+                        order = 3,
                         type = "toggle",
                         name = "Normal",
                         desc = "Boss kills on normal raid difficulty",
                     },
                     heroic = {
-                        order = 3,
+                        order = 4,
                         type = "toggle",
                         name = "Heroic",
                         desc = "Boss kills on heroic raid difficulty",
                     },
                     mythic = {
-                        order = 4,
+                        order = 5,
                         type = "toggle",
                         name = "Mythic",
                         desc = "Boss kills on mythic raid difficulty",
@@ -110,3 +117,115 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
         }
     }
 end
+
+-- [ ] Support world bosses
+function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
+
+    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
+
+    if success ~= 1 then
+        -- We only want winners here.
+        return
+    end
+
+    local settings = self:ProfileSettings().bosses
+
+    if not settings.screenshot then
+        self:TraceFormat("Boss screenshots off")
+        return
+    end
+
+    local bossInfo = self.db.char.bossInfo
+    if bossInfo == nil then
+        self.db.char.bossInfo = {}
+        bossInfo = self.db.char.bossInfo
+    end
+
+    
+    local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic, _, isLFR = GetDifficultyInfo(difficultyId)
+    local _, instanceType = GetInstanceInfo()
+    if instanceType ~= "raid" and instanceType ~= "party" then
+        self:TraceFormat("Invalid type %s", instanceType)
+        return
+    end
+
+    -- Handle some special one offs
+    if difficultyId == 205 and not settings.dungeon.follower then
+        -- Follower dungeons
+        return
+    elseif difficultyId == 220 and not settings.raid.story then
+        -- Story mode
+        return
+    elseif difficultyId == 7 and not settings.raid.lfr then
+        -- Legacy LFR
+        return
+    elseif instanceType == "raid" and not self:RaidScreenshot(isHeroic, displayHeroic, displayMythic, isLFR) then
+        return
+    elseif instanceType == "party" and not self:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic) then
+        return
+    end
+
+    if bossInfo[difficultyId] == nil then
+        bossInfo[difficultyId] = {}
+    end
+
+    if bossInfo[difficultyId][encounterId] == nil then
+        bossInfo[difficultyId][encounterId] = 0
+    end
+
+    bossInfo[difficultyId][encounterId] = bossInfo[difficultyId][encounterId] + 1
+
+    self:TraceFormat("Setting: %s", tostring(settings.onlyFirst))
+    self:TraceFormat("Enc Kill %s", bossInfo[difficultyId][encounterId])
+
+    if bossInfo[difficultyId][encounterId] > 1 and settings.onlyFirst then
+        self:TraceFormat("Setting off")
+        return
+    end
+
+    self:TraceFormat("Hello boss!")
+
+    -- [ ] List number of kills in general before going?
+    self:QueueScreenshot(1)
+end
+
+function Chronicler:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic)
+    local settings = self:ProfileSettings().bosses
+
+    -- Mythic or mythic keystone
+    if (isHeroic and isChallengeMode) or (isHeroic and displayMythic) then
+        return settings.dungeon.mythic
+    end
+
+    -- Heroic
+    if isHeroic then
+        return settings.dungeon.heroic
+    end
+
+    return settings.dungeon.normal
+    
+end
+
+-- Difficulty list https://warcraft.wiki.gg/wiki/DifficultyID
+function Chronicler:RaidScreenshot(isHeroic,displayHeroic,displayMythic,isLFR)
+    local settings = self:ProfileSettings().bosses
+
+    if isLFR then 
+        return settings.raid.lfr
+    end
+
+    -- Mythics
+    if displayMythic then
+        return settings.raid.mythic
+    end
+
+    -- Heroic
+    if isHeroic or displayHeroic then
+        return settings.raid.heroic
+    end
+
+    return settings.raid.normal
+
+end
+
+Chronicler:RegisterEvent("ENCOUNTER_END", "HandleEncounterEnd")

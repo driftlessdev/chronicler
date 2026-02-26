@@ -9,6 +9,8 @@ function Chronicler:DebugHandler(command)
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",random(100))
     elseif command == "death" then
         Chronicler:HandleDeath()
+    elseif command == "dungeon" then
+        Chronicler:HandleEncounterEnd(nil, 2007, nil, 1, nil, 1)
     end
 end
 
