@@ -38,6 +38,8 @@ TXT["Heroic"] = true
 TXT["Boss kills on heroic raid difficulty"] = true
 TXT["Mythic"] = true
 TXT["Boss kills on mythic raid difficulty"] = true
+-- <BOSS_NAME> (<DIFFICULTY>) kill #<KILL_COUNT>
+TXT["%s (%s) kill #%s"] = true
 
 -- Other
 TXT["Other"] = true

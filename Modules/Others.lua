@@ -92,12 +92,14 @@ function Chronicler:HandleDeath()
     local count = self.db.char.deathData.count + 1
     self.db.char.deathData.count = count
     local message = string.format(TXT["Death #%s as level %s"],count, curLevel)
+    local messages = {}
     Chronicler:TraceFormat("Death msg: %s",message)
     if settings.showCount then
-        RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])    
+        -- RaidNotice_AddMessage(RaidBossEmoteFrame, message, ChatTypeInfo["RAID_WARNING"])    
+        messages[1]=message
     end
 
-    self:QueueScreenshot(1)
+    self:QueueScreenshot(1, messages)
 end
 
 Chronicler:RegisterEvent("PLAYER_DEAD", "HandleDeath")

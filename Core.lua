@@ -45,31 +45,50 @@ end
 If multiple events happen in a short timeframe (boss + achievements) only
 let 1 active timer run with a cooldown period.
 ]]--
-function Chronicler:QueueScreenshot(delaySeconds)
+function Chronicler:QueueScreenshot(delaySeconds, messageList)
     if self.session.screenshot == nil then
         self.session.screenshot = {}
     end
-    local lastRequestInst = self.session.screenshot.lastRequest
-    local curInst = time()
+
     self:TraceFormat("Screenshot in %s seconds.", delaySeconds)
 
-    -- Wait 5 seconds between screenshot requests
-    if lastRequestInst ~= nil and (curInst - lastRequestInst) < 4 then
-        self:TraceFormat("Skipped screenshot due to cooldown of %s",(curInst - lastRequestInst))
-        return
-    elseif lastRequestInst == nil then
-        self:TraceFormat("First screenshot of the session")
-    else
-        self:TraceFormat("Screenshot cooldown passed - %s",(curInst - lastRequestInst))
+    delaySeconds = delaySeconds or 2
+    local msgQueue = self.session.screenshot.messages
+    if msgQueue == nil then
+        self.session.screenshot.messages = {}
+        self.session.screenshot.messages[0] = 0
+        msgQueue = self.session.screenshot.messages
     end
 
-    delaySeconds = delaySeconds or 2
-    self:ScheduleTimer("Screenshot",delaySeconds)
-    self.session.screenshot.lastRequest = time()
+    if messageList ~= nil then
+        self:TraceFormat("Adding messages")
+        local index = msgQueue[0]
+        for _, value in pairs(messageList) do
+            index = index + 1
+            msgQueue[index] = value
+        end
+        self.session.screenshot.messages[0]=index
+    end
 
+    -- Don't add a new timer
+    if self.session.screenshot.queued == 1 then
+        self:TraceFormat("Screenshot queued. Skipping")
+        return
+    end
+
+    self.session.screenshot.queued = 1
+    self:ScheduleTimer("Screenshot",delaySeconds)
 end
 
 function Chronicler:Screenshot()
     self:TraceFormat("Say cheese!")
+    for index, message in pairs(self.session.screenshot.messages) do
+        if index ~= 0 then
+            self:Print(message)    
+        end
+    end
     Screenshot()
+    self.session.screenshot.messages = {}
+    self.session.screenshot.messages[0] = 0
+    self.session.screenshot.queued = 0
 end

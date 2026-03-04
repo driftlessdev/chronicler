@@ -119,15 +119,9 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
     }
 end
 
--- [ ] Support world bosses
-function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
+function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
 
-    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
-
-    if success ~= 1 then
-        -- We only want winners here.
-        return
-    end
+    self:TraceFormat("HandleBOSS_KILL(%s, %s)", encounterId, encounterName)
 
     local settings = self:ProfileSettings().bosses
 
@@ -142,9 +136,9 @@ function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, succe
         bossInfo = self.db.char.bossInfo
     end
 
-    
+    local _, instanceType, difficultyId, difficultyName = GetInstanceInfo()
     local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic, _, isLFR = GetDifficultyInfo(difficultyId)
-    local _, instanceType = GetInstanceInfo()
+
     if instanceType ~= "raid" and instanceType ~= "party" then
         self:TraceFormat("Invalid type %s", instanceType)
         return
@@ -184,10 +178,10 @@ function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, succe
         return
     end
 
-    self:TraceFormat("Hello boss!")
 
-    -- [ ] List number of kills in general before going?
-    self:QueueScreenshot(1)
+    local message = { string.format(TXT["%s (%s) kill #%s"],encounterName,difficultyName,bossInfo[difficultyId][encounterId]) }
+
+    self:QueueScreenshot(1, message)
 end
 
 function Chronicler:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic)
@@ -229,4 +223,4 @@ function Chronicler:RaidScreenshot(isHeroic,displayHeroic,displayMythic,isLFR)
 
 end
 
-Chronicler:RegisterEvent("ENCOUNTER_END", "HandleEncounterEnd")
+Chronicler:RegisterEvent("BOSS_KILL", "HandleBOSS_KILL")

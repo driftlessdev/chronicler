@@ -70,6 +70,7 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
     end
 
     local oldLevel = oldLevelInfo.level
+    
 
     if newLevel <= oldLevel then
         -- How in the world did you go backwards...
@@ -103,13 +104,14 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
         elseif secs > 0 then
             levelMessage = string.format(TXT["Leveled blazing fast to %d in %d seconds!"],newLevel,secs)
         end
-        RaidNotice_AddMessage(RaidWarningFrame, levelMessage, ChatTypeInfo["RAID_WARNING"])
+        local messages = {levelMessage}
+
         self:TraceFormat(levelMessage)
         if oldLevelInfo.partial then
             self:TraceFormat("Level data was incomplete")
         end
 
-        self:QueueScreenshot(1)
+        self:QueueScreenshot(1, messages)
     end
 
     self.session.dingLevel = nil
