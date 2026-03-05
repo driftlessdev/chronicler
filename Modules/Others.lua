@@ -44,7 +44,13 @@ function Chronicler:BuildOtherOptions(groupArgs, configOrder)
                         desc = TXT["Record the moment"],
                     },
                 }
-            }
+            },
+            debug = {
+                order = 3,
+                type = "toggle",
+                name = TXT["Debug"],
+                desc = TXT["Dump a looooooooooot of data to chat."],
+            },
         }
     }
 end
@@ -58,19 +64,30 @@ function Chronicler:BuildOtherDefaults(settingNode)
         achievement = {
             screenshot = true,
         },
+        debug = false,
     }
 end
 
 function Chronicler:HandleAchievement(_eventName, achievementID, alreadyEarned)
 
+    self:TraceDump("HandleAchievement (%s, %s)", achievementID, alreadyEarned)
     local settings = self:ProfileSettings()
     if not settings.other.achievement.screenshot then
         return
     end
 
-    self:TraceFormat("Achievement: %s, earned? %s" ,achievementID, alreadyEarned)
+    local _, name, points, completed, _, _, _, _, _, icon, _, isGuild, wasEarnedByMe, earnedBy, _ = GetAchievementInfo(achievementID)
 
-    self:QueueScreenshot(1)
+    self:TraceFormat("Achievement dump - name:%s, points:%s, completed:%s, isGuild:%s, wasEarnedByMe:%s, earnedBy:%s", name, points, completed, isGuild, wasEarnedByMe, earnedBy)
+
+    if isGuild then
+        self:TraceFormat("Ignoring guild achievement %s", name)
+        return
+    end
+
+    local message = { string.format("Earned %s for %s points!", name, points)}
+
+    self:QueueScreenshot(1, message)
 
 end
 

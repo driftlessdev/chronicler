@@ -223,4 +223,11 @@ function Chronicler:RaidScreenshot(isHeroic,displayHeroic,displayMythic,isLFR)
 
 end
 
+function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
+    -- Here for tracing assistance
+    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
+end
+
+
 Chronicler:RegisterEvent("BOSS_KILL", "HandleBOSS_KILL")
+Chronicler:RegisterEvent("ENCOUNTER_END", "HandleEncounterEnd")

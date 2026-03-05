@@ -52,3 +52,5 @@ TXT["Achievements"] = true
 TXT["When you get props, screenshot"] = true
 TXT["Record the moment"] = true
 TXT["Death #%s as level %s"] = true
+TXT["Debug"] = true
+TXT["Dump a looooooooooot of data to chat."] = true
