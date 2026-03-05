@@ -22,11 +22,11 @@ function Chronicler:BuildBossDefaults(settingNode)
 end
 
 function Chronicler:BuildBossOptions(groupArgs, configOrder)
+
     groupArgs.bosses = {
         order = configOrder,
         type = "group",
         name = TXT["Boss Kills"],
-        inline = true;
         args = {
             screenshot = {
                 order = 1,
@@ -39,7 +39,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 type = "toggle",
                 name = TXT["First Kills Only"],
                 desc = TXT["Only screenshot first time kill is detected."],
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end
             },
             dungeon = {
                 order = 3,
@@ -47,7 +47,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 name = TXT["Dungeons"],
                 desc = TXT["Which dungeons to take boss kill screenshots."],
                 inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end,
                 args = {
                     follower = {
                         order = 1,
@@ -81,7 +81,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 name = TXT["Raids"],
                 desc = TXT["Which raids to take boss kill screenshots."],
                 inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end,
                 args = {
                     story = {
                         order = 1,
@@ -181,7 +181,7 @@ function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
 
     local message = { string.format(TXT["%s (%s) kill #%s"],encounterName,difficultyName,bossInfo[difficultyId][encounterId]) }
 
-    self:QueueScreenshot(1, message)
+    self:QueueScreenshot(message)
 end
 
 function Chronicler:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic)

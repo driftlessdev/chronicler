@@ -54,3 +54,7 @@ TXT["Record the moment"] = true
 TXT["Death #%s as level %s"] = true
 TXT["Debug"] = true
 TXT["Dump a looooooooooot of data to chat."] = true
+TXT["Screenshot delay"] = true
+-- Earned <ACHIEVEMENT_NAME> for <ACHIEVEMENT_POINTS> points!
+TXT["Earned %s for %s points!"] = true
+TXT["How many seconds to wait before taking tuehe screenshot."] = true

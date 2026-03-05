@@ -1,9 +1,5 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
-function Chronicler:SlashCommandHandler(command)
-    Chronicler:Print(string.format("You gave me %s and the message is %s", command, Chronicler.db.profile.msg));
-end
-
 function Chronicler:DebugHandler(command)
     if command == "player" then
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",random(100))
@@ -11,6 +7,8 @@ function Chronicler:DebugHandler(command)
         Chronicler:HandleDeath()
     elseif command == "dungeon" then
         Chronicler:HandleEncounterEnd(nil, 2007, nil, 1, nil, 1)
+    elseif command == "trigger" then
+        self:QueueScreenshot({"Manual screenshot trigger"})
     end
 end
 
@@ -22,7 +20,6 @@ function Chronicler:OnInitialize()
     local defaults = self:GetDefaults()
     self.db = LibStub("AceDB-3.0"):New("ChroniclerDB", defaults)
 
-    Chronicler:RegisterChatCommand("chron", "SlashCommandHandler")
     Chronicler:RegisterChatCommand("chrondebug", "DebugHandler")
     Chronicler:InitConfig()
 
@@ -45,10 +42,13 @@ end
 If multiple events happen in a short timeframe (boss + achievements) only
 let 1 active timer run with a cooldown period.
 ]]--
-function Chronicler:QueueScreenshot(delaySeconds, messageList)
+function Chronicler:QueueScreenshot(messageList)
+    self:TraceFormat("QueueScreenshot(%s)", delaySeconds, Chronicler:Serialize(messageList))
     if self.session.screenshot == nil then
         self.session.screenshot = {}
     end
+
+    local delaySeconds = self:ProfileSettings().other.delaySec
 
     self:TraceFormat("Screenshot in %s seconds.", delaySeconds)
 
