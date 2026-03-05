@@ -10,6 +10,9 @@ function Chronicler:TraceFormat(...)
   local status, res = pcall(format, ...)
   if status then
     if DLAPI then DLAPI.DebugLog("Chronicler", res) end
+    if self.db.profile.settings.other.debug then
+      self:Print(res)
+    end
   end
 end
 

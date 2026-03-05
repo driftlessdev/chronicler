@@ -5,8 +5,9 @@ function Chronicler:ProfileSettings()
 end
 
 function Chronicler:SetOption(info, value)
-    local opts = Chronicler.db.profile;
-    -- Ignore root which is just tab grouping for settings/profile
+    local opts = self:ProfileSettings()
+
+    -- Ignore root which is just Chronicler
     for level = 1, #info do
         if level == #info then
             -- Set leaf value
@@ -22,10 +23,10 @@ function Chronicler:SetOption(info, value)
 end
 
 function Chronicler:GetOption(info)
-    local opts = Chronicler.db.profile;
-    local value = nil;
+    local opts = self:ProfileSettings()
+    local value = nil
 
-    -- Ignore root which is just tab grouping for settings/profile
+    -- Ignore root which is just Chronicler
     for level = 1, #info do
         if level == #info then
             -- Set leaf value
@@ -48,11 +49,9 @@ function Chronicler:GetDefaults()
     self:BuildBossDefaults(settingsNode)
     self:BuildLevelingDefaults(settingsNode)
 
-    local defaults = {
-        profile = {
-            settings = settingsNode,
-        },
-    }
+    local defaults = {}
+    defaults.profile = {}
+    defaults.profile.settings = settingsNode
 
     return defaults
 end
@@ -72,15 +71,7 @@ function Chronicler:BuildOptionTable()
         get = 'GetOption',
         set = 'SetOption',
         childGroups = "tab",
-        args = {
-            settings = {
-                order = 1,
-                type = "group",
-                name = "Settings",
-                childGroups = "tab",
-                args = settingsArgs
-            }
-        }
+        args = settingsArgs,
     }
 
     return options;

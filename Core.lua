@@ -1,9 +1,5 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
-function Chronicler:SlashCommandHandler(command)
-    Chronicler:Print(string.format("You gave me %s and the message is %s", command, Chronicler.db.profile.msg));
-end
-
 function Chronicler:DebugHandler(command)
     if command == "player" then
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",random(100))
@@ -11,6 +7,8 @@ function Chronicler:DebugHandler(command)
         Chronicler:HandleDeath()
     elseif command == "dungeon" then
         Chronicler:HandleEncounterEnd(nil, 2007, nil, 1, nil, 1)
+    elseif command == "trigger" then
+        self:QueueScreenshot({"Manual screenshot trigger"})
     end
 end
 
@@ -22,7 +20,6 @@ function Chronicler:OnInitialize()
     local defaults = self:GetDefaults()
     self.db = LibStub("AceDB-3.0"):New("ChroniclerDB", defaults)
 
-    Chronicler:RegisterChatCommand("chron", "SlashCommandHandler")
     Chronicler:RegisterChatCommand("chrondebug", "DebugHandler")
     Chronicler:InitConfig()
 
@@ -45,31 +42,53 @@ end
 If multiple events happen in a short timeframe (boss + achievements) only
 let 1 active timer run with a cooldown period.
 ]]--
-function Chronicler:QueueScreenshot(delaySeconds)
+function Chronicler:QueueScreenshot(messageList)
+    self:TraceFormat("QueueScreenshot(%s)", delaySeconds, Chronicler:Serialize(messageList))
     if self.session.screenshot == nil then
         self.session.screenshot = {}
     end
-    local lastRequestInst = self.session.screenshot.lastRequest
-    local curInst = time()
+
+    local delaySeconds = self:ProfileSettings().other.delaySec
+
     self:TraceFormat("Screenshot in %s seconds.", delaySeconds)
 
-    -- Wait 5 seconds between screenshot requests
-    if lastRequestInst ~= nil and (curInst - lastRequestInst) < 4 then
-        self:TraceFormat("Skipped screenshot due to cooldown of %s",(curInst - lastRequestInst))
-        return
-    elseif lastRequestInst == nil then
-        self:TraceFormat("First screenshot of the session")
-    else
-        self:TraceFormat("Screenshot cooldown passed - %s",(curInst - lastRequestInst))
+    delaySeconds = delaySeconds or 2
+    local msgQueue = self.session.screenshot.messages
+    if msgQueue == nil then
+        self.session.screenshot.messages = {}
+        self.session.screenshot.messages[0] = 0
+        msgQueue = self.session.screenshot.messages
     end
 
-    delaySeconds = delaySeconds or 2
-    self:ScheduleTimer("Screenshot",delaySeconds)
-    self.session.screenshot.lastRequest = time()
+    if messageList ~= nil then
+        self:TraceFormat("Adding messages")
+        local index = msgQueue[0]
+        for _, value in pairs(messageList) do
+            index = index + 1
+            msgQueue[index] = value
+        end
+        self.session.screenshot.messages[0]=index
+    end
 
+    -- Don't add a new timer
+    if self.session.screenshot.queued == 1 then
+        self:TraceFormat("Screenshot queued. Skipping")
+        return
+    end
+
+    self.session.screenshot.queued = 1
+    self:ScheduleTimer("Screenshot",delaySeconds)
 end
 
 function Chronicler:Screenshot()
     self:TraceFormat("Say cheese!")
+    for index, message in pairs(self.session.screenshot.messages) do
+        if index ~= 0 then
+            self:Print(message)    
+        end
+    end
     Screenshot()
+    self.session.screenshot.messages = {}
+    self.session.screenshot.messages[0] = 0
+    self.session.screenshot.queued = 0
 end

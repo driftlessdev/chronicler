@@ -7,7 +7,6 @@ function Chronicler:BuildLevelOptions(groupArgs,configOrder)
         order = configOrder,
         type = "group",
         name = "Leveling",
-        inline = true;
         args = {
             screenshot = {
                 order = 1,
@@ -20,7 +19,7 @@ function Chronicler:BuildLevelOptions(groupArgs,configOrder)
                 type = "toggle",
                 name = TXT["Show Level Timing"],
                 desc = TXT["Show how long it took to reach the new level"],
-                disabled = function () return not self.db.profile.settings.leveling.screenshot end
+                disabled = function () return not self:ProfileSettings().leveling.screenshot end
             }
         }
     }
@@ -70,6 +69,7 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
     end
 
     local oldLevel = oldLevelInfo.level
+    
 
     if newLevel <= oldLevel then
         -- How in the world did you go backwards...
@@ -103,13 +103,14 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
         elseif secs > 0 then
             levelMessage = string.format(TXT["Leveled blazing fast to %d in %d seconds!"],newLevel,secs)
         end
-        RaidNotice_AddMessage(RaidWarningFrame, levelMessage, ChatTypeInfo["RAID_WARNING"])
+        local messages = {levelMessage}
+
         self:TraceFormat(levelMessage)
         if oldLevelInfo.partial then
             self:TraceFormat("Level data was incomplete")
         end
 
-        self:QueueScreenshot(1)
+        self:QueueScreenshot(messages)
     end
 
     self.session.dingLevel = nil

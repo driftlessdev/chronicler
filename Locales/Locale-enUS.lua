@@ -38,6 +38,8 @@ TXT["Heroic"] = true
 TXT["Boss kills on heroic raid difficulty"] = true
 TXT["Mythic"] = true
 TXT["Boss kills on mythic raid difficulty"] = true
+-- <BOSS_NAME> (<DIFFICULTY>) kill #<KILL_COUNT>
+TXT["%s (%s) kill #%s"] = true
 
 -- Other
 TXT["Other"] = true
@@ -50,3 +52,9 @@ TXT["Achievements"] = true
 TXT["When you get props, screenshot"] = true
 TXT["Record the moment"] = true
 TXT["Death #%s as level %s"] = true
+TXT["Debug"] = true
+TXT["Dump a looooooooooot of data to chat."] = true
+TXT["Screenshot delay"] = true
+-- Earned <ACHIEVEMENT_NAME> for <ACHIEVEMENT_POINTS> points!
+TXT["Earned %s for %s points!"] = true
+TXT["How many seconds to wait before taking tuehe screenshot."] = true

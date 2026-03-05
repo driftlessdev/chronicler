@@ -22,11 +22,11 @@ function Chronicler:BuildBossDefaults(settingNode)
 end
 
 function Chronicler:BuildBossOptions(groupArgs, configOrder)
+
     groupArgs.bosses = {
         order = configOrder,
         type = "group",
         name = TXT["Boss Kills"],
-        inline = true;
         args = {
             screenshot = {
                 order = 1,
@@ -39,7 +39,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 type = "toggle",
                 name = TXT["First Kills Only"],
                 desc = TXT["Only screenshot first time kill is detected."],
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end
             },
             dungeon = {
                 order = 3,
@@ -47,7 +47,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 name = TXT["Dungeons"],
                 desc = TXT["Which dungeons to take boss kill screenshots."],
                 inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end,
                 args = {
                     follower = {
                         order = 1,
@@ -81,7 +81,7 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 name = TXT["Raids"],
                 desc = TXT["Which raids to take boss kill screenshots."],
                 inline = true,
-                disabled = function () return not self.db.profile.settings.bosses.screenshot end,
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end,
                 args = {
                     story = {
                         order = 1,
@@ -119,15 +119,9 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
     }
 end
 
--- [ ] Support world bosses
-function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
+function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
 
-    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
-
-    if success ~= 1 then
-        -- We only want winners here.
-        return
-    end
+    self:TraceFormat("HandleBOSS_KILL(%s, %s)", encounterId, encounterName)
 
     local settings = self:ProfileSettings().bosses
 
@@ -142,9 +136,9 @@ function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, succe
         bossInfo = self.db.char.bossInfo
     end
 
-    
+    local _, instanceType, difficultyId, difficultyName = GetInstanceInfo()
     local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic, _, isLFR = GetDifficultyInfo(difficultyId)
-    local _, instanceType = GetInstanceInfo()
+
     if instanceType ~= "raid" and instanceType ~= "party" then
         self:TraceFormat("Invalid type %s", instanceType)
         return
@@ -184,10 +178,10 @@ function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, succe
         return
     end
 
-    self:TraceFormat("Hello boss!")
 
-    -- [ ] List number of kills in general before going?
-    self:QueueScreenshot(1)
+    local message = { string.format(TXT["%s (%s) kill #%s"],encounterName,difficultyName,bossInfo[difficultyId][encounterId]) }
+
+    self:QueueScreenshot(message)
 end
 
 function Chronicler:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic)
@@ -229,4 +223,11 @@ function Chronicler:RaidScreenshot(isHeroic,displayHeroic,displayMythic,isLFR)
 
 end
 
+function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
+    -- Here for tracing assistance
+    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
+end
+
+
+Chronicler:RegisterEvent("BOSS_KILL", "HandleBOSS_KILL")
 Chronicler:RegisterEvent("ENCOUNTER_END", "HandleEncounterEnd")
