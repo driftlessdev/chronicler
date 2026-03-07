@@ -97,7 +97,9 @@ end
 
 function Chronicler:timePlayedHandler(_eventName, ...)
     local totalplayedSecs,levelplayedSecs = ...
+    self:TraceEvent("timePlayedHandler(%s, %s, %s)",_eventName, tostring(totalplayedSecs), tostring(levelplayedSecs))
 
+    self:UnregisterEvent("TIME_PLAYED_MSG")
     self:CharacterLeveled(totalplayedSecs,levelplayedSecs)
 
 end
