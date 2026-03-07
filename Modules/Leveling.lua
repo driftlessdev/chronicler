@@ -34,7 +34,11 @@ function Chronicler:BuildLevelingDefaults(settingNode)
 end
 
 function Chronicler:levelUpHandler(_eventName, newLevel, ...)
-    self:TraceEvent("Player Level %s, Event %s", newLevel, _eventName);
+    self:TraceFunc("Player Level %s, Event %s", newLevel, _eventName);
+    local settings = self:ProfileSettings().leveling
+    if not settings.screenshot then
+        return
+    end
     self.session.dingLevel = newLevel
     self:LoadTimePlayed()
 end
@@ -45,22 +49,43 @@ function Chronicler:LoadTimePlayed()
     RequestTimePlayed()
 end
 
+function Chronicler:SetupTimePlayed()
+    self:TraceFormat("Setting up played time")
+    self:RegisterEvent("TIME_PLAYED_MSG", "HandleSetupTimePlayed")
+    RequestTimePlayed()
+end
+
+function Chronicler:HandleSetupTimePlayed(_, ...)
+    local totalplayedSecs,levelplayedSecs = ...
+    self:UnregisterEvent("TIME_PLAYED_MSG")
+    self:TraceFunc("HandleSetupTimePlayed(%s, %s)", tostring(totalplayedSecs), tostring(levelplayedSecs))
+    local levelInfo = self.db.char.currentLevel
+
+    if levelInfo == nil then
+        self:InitLevelInfo(totalplayedSecs,levelplayedSecs)
+        return
+    end
+
+    local curLevel = UnitLevel("player")
+
+    if levelInfo.level ~= curLevel then
+        self:EndLevelInfo(nil,true)
+        self:InitLevelInfo(totalplayedSecs, levelplayedSecs)
+        self:Trace("WARN",4,"Level","Skew Detected. Saved %s - New %s", levelInfo.level, curLevel)
+    end
+end
+
 function Chronicler:timePlayedHandler(_eventName, ...)
     local totalplayedSecs,levelplayedSecs = ...
 
-    self:UnregisterEvent("TIME_PLAYED_MSG")
-
-    if self.db.char.currentLevel == nil then
-        self:InitLevelInfo(totalplayedSecs,levelplayedSecs)
-    else
-        self:CharacterLeveled(totalplayedSecs,levelplayedSecs)
-    end
+    self:CharacterLeveled(totalplayedSecs,levelplayedSecs)
 
 end
 -- [ ] Update handling for new characters to check total time played
 function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
     local newLevel = UnitLevel("player")
     local oldLevelInfo = self.db.char.currentLevel
+    local settings = self:ProfileSettings().leveling
 
     if oldLevelInfo == nil then
         self:TraceErr("This should not happen... New level is %s",newLevel)
@@ -69,26 +94,17 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
         return
     end
 
-    local oldLevel = oldLevelInfo.level
-    
-
-    if newLevel <= oldLevel then
-        -- How in the world did you go backwards...
-        -- Timelords not allowed. Reset level data.
-        self.db.char.levelInfo = {}
-        self:InitLevelInfo(totalplayedSecs, levelplayedSecs, true)
-        self:TraceFormat("Timelord Detected. Saved %s - New %s", oldLevelInfo.level, newLevel)
-    elseif (newLevel - 1) > oldLevel or self.session.dingLevel == nil then
-        -- Addon was off for a few levels.
-        -- Close current as incomplete, start a new level.
-        self:EndLevelInfo(nil,true)
-        self:InitLevelInfo(totalplayedSecs, levelplayedSecs, true)
-        self:TraceFormat("Skip Detected. Saved %s - New %s", oldLevelInfo.level, newLevel)
+    -- Don't alter session if testing
+    if self.session.testLevel then
+        oldLevelInfo.playedSecs = 4200
     else
-        -- Boring old ding
         self:EndLevelInfo(totalplayedSecs)
         self:InitLevelInfo(totalplayedSecs, 0)
-        self:TraceFormat("More Power. Saved %s - New %s", oldLevelInfo.level, newLevel)
+    end
+
+    self:TraceFormat("More Power. Saved %s - New %s", oldLevelInfo.level, newLevel)
+    local messages = {}
+    if settings.showTime then 
         local days = math.floor(oldLevelInfo.playedSecs / 86400)
         local hours = math.floor((oldLevelInfo.playedSecs % 86400) / 3600)
         local mins = math.floor((oldLevelInfo.playedSecs % 3600) / 60)
@@ -104,20 +120,22 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
         elseif secs > 0 then
             levelMessage = string.format(TXT["Leveled blazing fast to %d in %d seconds!"],newLevel,secs)
         end
-        local messages = {levelMessage}
+        table.insert(messages,levelMessage)
 
         self:TraceFormat(levelMessage)
-        if oldLevelInfo.partial then
-            self:TraceFormat("Level data was incomplete")
-        end
-
-        self:QueueScreenshot(messages)
     end
 
+    self:QueueScreenshot(messages)
+
+    if self.session.testLevel then
+        oldLevelInfo.playedSecs = nil
+    end
+
+    self.session.testLevel = false
     self.session.dingLevel = nil
 end
 
-function Chronicler:InitLevelInfo(totalplayedSecs, levelplayedSecs, lateStart)
+function Chronicler:InitLevelInfo(totalplayedSecs, levelplayedSecs)
     self.db.char.currentLevel = {}
     local curLevelInfo = self.db.char.currentLevel
 
@@ -127,9 +145,6 @@ function Chronicler:InitLevelInfo(totalplayedSecs, levelplayedSecs, lateStart)
     else
         curLevelInfo.startplayedSecs = totalplayedSecs - levelplayedSecs
     end
-    
-    self:TraceFormat("Late? %s", tostring(lateStart))
-    if lateStart and curLevelInfo.level > 1 then curLevelInfo.partial = true end
 
     curLevelInfo.startTime = time()
     curLevelInfo.version = "1.0"

@@ -26,19 +26,11 @@ local function DebugLog(text,status,verbosity,category)
   end
 
   if type(verbosity) == "number" and verbosity >= 1 and verbosity <= 9 then
-    if prefix == "" then
-      prefix = tostring(verbosity)
-    else
-      prefix = prefix .. tostring(verbosity) .. "~"
-    end
+    prefix = prefix .. tostring(verbosity) .. "~"
   end
 
   if type(category) == "string" then
-    if prefix == "" then
-      prefix = category
-    else
-      prefix = prefix .. category .. "~"
-    end
+    prefix = prefix .. category .. "~"
   end
 
   if type(text) == "table" then
@@ -118,10 +110,16 @@ function Chronicler:Trace(status,verbosity,category,...)
     DebugLog(result,status,verbosity,category)
   end
 end
----Logs an entru into the Event category in DebugLog with verbosity of 7
+---Logs an entru into the Event category in DebugLog with verbosity of 6
 ---@param ... string Strings to be fed to string.format. First string is the output
 function Chronicler:TraceEvent(...)
-  self:Trace(nil,7,"Event",...)
+  self:Trace(nil,6,"Event",...)
+end
+
+---Logs an entru into the Event category in DebugLog with verbosity of 6
+---@param ... string Strings to be fed to string.format. First string is the output
+function Chronicler:TraceFunc(...)
+  self:Trace(nil,6,"Func",...)
 end
 
 ---@param ... string Strings to be fed to string.format. First string is the output
