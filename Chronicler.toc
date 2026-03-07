@@ -2,7 +2,7 @@
 ## Title: Chronicler
 ## Notes: Screenshot your leveling journey.
 ## Author: DriftlessDev / Loresbane @ Aerie Peak
-## Version: 1.0.0-beta.2
+## Version: 1.0.0
 ## OptionalDeps: Ace3
 ## SavedVariables: ChroniclerDB
 ## OptionalDeps: _DebugLog
