@@ -1,3 +1,4 @@
+---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
 function Chronicler:ProfileSettings()

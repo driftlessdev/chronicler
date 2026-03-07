@@ -1,3 +1,4 @@
+---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
 function Chronicler:DebugHandler(command)
@@ -43,7 +44,7 @@ If multiple events happen in a short timeframe (boss + achievements) only
 let 1 active timer run with a cooldown period.
 ]]--
 function Chronicler:QueueScreenshot(messageList)
-    self:TraceFormat("QueueScreenshot(%s)", delaySeconds, Chronicler:Serialize(messageList))
+    self:TraceFormat("QueueScreenshot(%s)", Chronicler:Serialize(messageList))
     if self.session.screenshot == nil then
         self.session.screenshot = {}
     end

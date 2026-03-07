@@ -1,3 +1,4 @@
+---@class Chronicler: AceAddon, AceConsole-3.0, AceEvent-3.0, AceSerializer-3.0, AceTimer-3.0
 local Chronicler = LibStub("AceAddon-3.0"):NewAddon("Chronicler", "AceConsole-3.0", "AceEvent-3.0", "AceSerializer-3.0", "AceTimer-3.0")
 
 -- Purpose: Setup addon, setup shared functions

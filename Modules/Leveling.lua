@@ -1,3 +1,4 @@
+---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
