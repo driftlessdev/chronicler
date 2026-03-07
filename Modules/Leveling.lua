@@ -34,7 +34,7 @@ function Chronicler:BuildLevelingDefaults(settingNode)
 end
 
 function Chronicler:levelUpHandler(_eventName, newLevel, ...)
-    self:TraceFormat("Player Level %s, Event %s", newLevel, _eventName);
+    self:TraceEvent("Player Level %s, Event %s", newLevel, _eventName);
     self.session.dingLevel = newLevel
     self:LoadTimePlayed()
 end
@@ -63,7 +63,7 @@ function Chronicler:CharacterLeveled(totalplayedSecs, levelplayedSecs)
     local oldLevelInfo = self.db.char.currentLevel
 
     if oldLevelInfo == nil then
-        self:TraceFormat("This should not happen... New level is %s",newLevel)
+        self:TraceErr("This should not happen... New level is %s",newLevel)
         self:InitLevelInfo(totalplayedSecs, levelplayedSecs)
         self.session.dingLevel = nil
         return

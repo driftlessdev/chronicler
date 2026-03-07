@@ -7,8 +7,8 @@ end
 
 function Chronicler:SetOption(info, value)
     local opts = self:ProfileSettings()
+    
 
-    -- Ignore root which is just Chronicler
     for level = 1, #info do
         if level == #info then
             -- Set leaf value
@@ -20,14 +20,25 @@ function Chronicler:SetOption(info, value)
         end
         
     end
+
     opts[info[#info]] = value;
+
+    -- Keep SPAM low
+    if self:IsDebugOn() then
+        local path = "obj";
+
+        for key, val in ipairs(info) do
+            path = string.format("%s.%s(%s)",path, val, tostring(key))
+        end
+
+        self:Trace(nil,9,"Option","Set %s = %s", tostring(path), tostring(value))
+    end
 end
 
 function Chronicler:GetOption(info)
     local opts = self:ProfileSettings()
     local value = nil
 
-    -- Ignore root which is just Chronicler
     for level = 1, #info do
         if level == #info then
             -- Set leaf value
@@ -38,6 +49,16 @@ function Chronicler:GetOption(info)
             opts = opts[info[level]];
         end
         
+    end
+
+    -- Only trace on debug, as this can get spammy
+    if self:IsDebugOn() then
+        local path = tostring(info[0]);
+
+        for key, val in ipairs(info) do
+            path = string.format("%s.%s(%s)",path, val, tostring(key))
+        end
+        self:Trace(nil,9,"Option","Get %s = %s", path, tostring(value))
     end
 
     return value

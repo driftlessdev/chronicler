@@ -81,7 +81,7 @@ end
 
 function Chronicler:HandleAchievement(_eventName, achievementID, alreadyEarned)
 
-    self:TraceDump("HandleAchievement (%s, %s)", achievementID, alreadyEarned)
+    self:TraceEvent("HandleAchievement (%s, %s)", achievementID, alreadyEarned)
     local settings = self:ProfileSettings()
     if not settings.other.achievement.screenshot then
         return
