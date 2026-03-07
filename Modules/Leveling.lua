@@ -9,19 +9,38 @@ function Chronicler:BuildLevelOptions(groupArgs,configOrder)
         type = "group",
         name = "Leveling",
         args = {
+            charHeader = {
+                order = 50,
+                type = "header",
+                name = TXT["Character Levels"],
+                width = "full",
+            },
             screenshot = {
-                order = 1,
+                order = 100,
                 type = "toggle",
                 name = TXT["Screenshot"],
                 desc = TXT["Take a screenshot on leveling"],
             },
             showTime = {
-                order = 2,
+                order = 110,
                 type = "toggle",
                 name = TXT["Show Level Timing"],
                 desc = TXT["Show how long it took to reach the new level"],
-                disabled = function () return not self:ProfileSettings().leveling.screenshot end
-            }
+                disabled = function () return not self:ProfileSettings().leveling.screenshot end,
+            },
+            renownHeader = {
+                order = 200,
+                type = "header",
+                name = TXT["Renown Levels"],
+                width = "full",
+            },
+            renown = {
+                order = 210,
+                type = "toggle",
+                name = TXT["Screenshot"],
+                desc = TXT["Take a screenshot on a new renown level"],
+                width = "full"
+            },
         }
     }
 end
@@ -30,6 +49,7 @@ function Chronicler:BuildLevelingDefaults(settingNode)
     settingNode.leveling = {
         screenshot = true,
         showTime = true,
+        renown = true,
     }
 end
 
@@ -168,4 +188,24 @@ function Chronicler:EndLevelInfo(totalplayedSecs, forceClose)
     self:TraceFormat("Closed level %s", oldLevelInfo.level)
 end
 
+function Chronicler:HandleFactionLevelChange(factionId, newLevel, oldLevel)
+    self:TraceEvent("HandleFactionLevelChange(%s, %s, %s)", factionId, newLevel, oldLevel)
+    local settings = self:ProfileSettings().leveling
+    if not settings.renown then
+        return
+    end
+    local factionData = C_MajorFactions.GetMajorFactionData(factionId)
+
+    if factionData == nil then
+        self:TraceErr("No data returned for %s", factionId)
+        return
+    end
+
+    local message = string.format("%s renown increased to %s", factionData.name, factionData.renownLevel)
+
+    self:QueueScreenshot({message})
+
+end
+
 Chronicler:RegisterEvent("PLAYER_LEVEL_UP", "levelUpHandler")
+Chronicler:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED","HandleFactionLevelChange")

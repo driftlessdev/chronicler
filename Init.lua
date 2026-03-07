@@ -18,8 +18,6 @@ end
 local function DebugLog(text,status,verbosity,category)
   if not DLAPI then return end
 
-  -- Swap out %, can confuse tracer
-  text = string.gsub(text,"%%","$")
   local prefix = ""
   if status ~= nil then
     prefix = status .. "~"
@@ -71,12 +69,12 @@ function Chronicler:TableToText(inTable,outTable, level)
   for key, value in pairs(inTable) do
     local valType = type(value)
     if valType == "table" then
-      table.insert(outTable,string.format("%s%s",padding, key))
+      table.insert(outTable,string.format("%s%s",padding, tostring(key)))
       self:TableToText(value, outTable, level + 1)
     elseif valType == "function" or valType == "thread" or valType == "userdata" then
-      table.insert(outTable,string.format("%s%s = <%s>", padding, key, valType))
+      table.insert(outTable,string.format("%s%s = <%s>", padding, tostring(key), valType))
     else
-      table.insert(outTable,string.format("%s%s = %s", padding, key, tostring(value)))
+      table.insert(outTable,string.format("%s%s = %s", padding, tostring(key), tostring(value)))
     end
     
   end

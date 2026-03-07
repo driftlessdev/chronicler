@@ -2,7 +2,7 @@
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
 function Chronicler:DebugHandler(command)
-    if command == "player" then
+    if command == "level" then
         self.session.testLevel = true
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",UnitLevel("player"))
     elseif command == "death" then
@@ -11,7 +11,14 @@ function Chronicler:DebugHandler(command)
         Chronicler:HandleEncounterEnd(nil, 2007, nil, 1, nil, 1)
     elseif command == "trigger" then
         self:QueueScreenshot({"Manual screenshot trigger"})
+    elseif command == "renown" then
+        -- Silvermoon Court
+        Chronicler:HandleFactionLevelChange(2710, 10, 9)
     end
+end
+
+function Chronicler:CommandHandler(...)
+    LibStub("AceConfigDialog-3.0"):Open("Chronicler")
 end
 
 function Chronicler:OnInitialize()
@@ -23,6 +30,7 @@ function Chronicler:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ChroniclerDB", defaults)
 
     Chronicler:RegisterChatCommand("chrondebug", "DebugHandler")
+    Chronicler:RegisterChatCommand("chron", "CommandHandler")
     Chronicler:InitConfig()
 
     Chronicler:Trace(nil,5,"Events","Init Complete")
