@@ -1,8 +1,8 @@
 ## Interface: 120000
 ## Title: Chronicler
-## Notes: Document your leveling journey.
-## Author: Loresbane
-## Version: 0.1
+## Notes: Screenshot your leveling journey.
+## Author: DriftlessDev / Loresbane @ Aerie Peak
+## Version: 1.0.0-beta.2
 ## OptionalDeps: Ace3
 ## SavedVariables: ChroniclerDB
 ## OptionalDeps: _DebugLog
