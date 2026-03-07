@@ -190,10 +190,11 @@ function Chronicler:EndLevelInfo(totalplayedSecs, forceClose)
     self:TraceFormat("Closed level %s", oldLevelInfo.level)
 end
 
-function Chronicler:HandleFactionLevelChange(factionId, newLevel, oldLevel)
+function Chronicler:HandleFactionLevelChange(_, factionId, newLevel, oldLevel)
     self:TraceEvent("HandleFactionLevelChange(%s, %s, %s)", factionId, newLevel, oldLevel)
     local settings = self:ProfileSettings().leveling
     if not settings.renown then
+        self:TraceErr("Renown settings off %s", tostring(settings.renown))
         return
     end
     local factionData = C_MajorFactions.GetMajorFactionData(factionId)
