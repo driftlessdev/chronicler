@@ -1,3 +1,4 @@
+---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
@@ -80,7 +81,7 @@ end
 
 function Chronicler:HandleAchievement(_eventName, achievementID, alreadyEarned)
 
-    self:TraceDump("HandleAchievement (%s, %s)", achievementID, alreadyEarned)
+    self:TraceEvent("HandleAchievement (%s, %s)", achievementID, alreadyEarned)
     local settings = self:ProfileSettings()
     if not settings.other.achievement.screenshot then
         return

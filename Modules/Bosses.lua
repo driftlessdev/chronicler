@@ -1,3 +1,4 @@
+---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 local TXT = LibStub("AceLocale-3.0"):GetLocale("Chronicler", true)
 
@@ -121,7 +122,7 @@ end
 
 function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
 
-    self:TraceFormat("HandleBOSS_KILL(%s, %s)", encounterId, encounterName)
+    self:TraceEvent("HandleBOSS_KILL(%s, %s)", encounterId, encounterName)
 
     local settings = self:ProfileSettings().bosses
 
@@ -140,7 +141,7 @@ function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
     local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic, _, isLFR = GetDifficultyInfo(difficultyId)
 
     if instanceType ~= "raid" and instanceType ~= "party" then
-        self:TraceFormat("Invalid type %s", instanceType)
+        self:TraceErr("Invalid type %s", instanceType)
         return
     end
 
@@ -225,7 +226,7 @@ end
 
 function Chronicler:HandleEncounterEnd(_, encounterId, _, difficultyId, _, success)
     -- Here for tracing assistance
-    self:TraceFormat("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
+    self:TraceEvent("HandleEncounterEnd: enc: %s, diff: %s, success: %s", encounterId, difficultyId, success)
 end
 
 

@@ -10,6 +10,9 @@ TXT["Level %d in %d days, %d hours, and %d minutes!"] = true
 TXT["Level %d in %d hours, and %d minutes!"] = true
 TXT["Level %d in %d minutes!"] = true
 TXT["Leveled blazing fast to %d in %d seconds!"] = true
+TXT["Character Levels"] = true
+TXT["Take a screenshot on a new renown level"] = true
+TXT["Renown Levels"] = true
 
 -- Boss kills
 TXT["Boss Kills"] = true
@@ -57,4 +60,4 @@ TXT["Dump a looooooooooot of data to chat."] = true
 TXT["Screenshot delay"] = true
 -- Earned <ACHIEVEMENT_NAME> for <ACHIEVEMENT_POINTS> points!
 TXT["Earned %s for %s points!"] = true
-TXT["How many seconds to wait before taking tuehe screenshot."] = true
+TXT["How many seconds to wait before taking the screenshot."] = true
