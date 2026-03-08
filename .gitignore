@@ -56,3 +56,7 @@ luac.out
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Packager will get latest versions
+/Libs/**
+.svn/
