@@ -13,7 +13,7 @@ function Chronicler:DebugHandler(command)
         self:QueueScreenshot({"Manual screenshot trigger"})
     elseif command == "renown" then
         -- Silvermoon Court
-        Chronicler:HandleFactionLevelChange(2710, 10, 9)
+        Chronicler:HandleFactionLevelChange("TEST",2710, 10, 9)
     end
 end
 

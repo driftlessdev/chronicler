@@ -10,9 +10,9 @@ Screenshot visual proof you killed that boss, dinged that level, or died embarra
 - Deaths this level
 - Achievements
 - Renown levels
+- Delve boss kills
 
 ## Future Potential Events
-- Delve completions
 - Loot wins
 
 ## Translators

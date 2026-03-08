@@ -6,6 +6,7 @@ function Chronicler:BuildBossDefaults(settingNode)
     settingNode.bosses = {
         screenshot = true,
         onlyFirst = true,
+        delves = true,
         dungeon = {
             follower = false,
             normal = true,
@@ -40,6 +41,13 @@ function Chronicler:BuildBossOptions(groupArgs, configOrder)
                 type = "toggle",
                 name = TXT["First Kills Only"],
                 desc = TXT["Only screenshot first time kill is detected."],
+                disabled = function () return not self:ProfileSettings().bosses.screenshot end
+            },
+            delves = {
+                order = 2.5,
+                type = "toggle",
+                name = TXT["Delves"],
+                desc = TXT["Boss kills when in a delve"],
                 disabled = function () return not self:ProfileSettings().bosses.screenshot end
             },
             dungeon = {
@@ -140,7 +148,7 @@ function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
     local _, instanceType, difficultyId, difficultyName = GetInstanceInfo()
     local _, _, isHeroic, isChallengeMode, displayHeroic, displayMythic, _, isLFR = GetDifficultyInfo(difficultyId)
 
-    if instanceType ~= "raid" and instanceType ~= "party" then
+    if instanceType ~= "raid" and instanceType ~= "party" and difficultyId ~= 208 then -- 208 = Delves
         self:TraceErr("Invalid type %s", instanceType)
         return
     end
@@ -158,6 +166,8 @@ function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
     elseif instanceType == "raid" and not self:RaidScreenshot(isHeroic, displayHeroic, displayMythic, isLFR) then
         return
     elseif instanceType == "party" and not self:DungeonScreenshot(isHeroic,isChallengeMode,displayMythic) then
+        return
+    elseif difficultyId == 208 and not settings.delves then
         return
     end
 
