@@ -1,6 +1,7 @@
 ---@class Chronicler
 local Chronicler = LibStub("AceAddon-3.0"):GetAddon("Chronicler")
 
+--@do-not-package@
 function Chronicler:DebugHandler(command)
     if command == "level" then
         self.session.testLevel = true
@@ -16,6 +17,7 @@ function Chronicler:DebugHandler(command)
         Chronicler:HandleFactionLevelChange("TEST",2710, 10, 9)
     end
 end
+--@end-do-not-package@
 
 function Chronicler:CommandHandler(...)
     LibStub("AceConfigDialog-3.0"):Open("Chronicler")
@@ -29,7 +31,9 @@ function Chronicler:OnInitialize()
     local defaults = self:GetDefaults()
     self.db = LibStub("AceDB-3.0"):New("ChroniclerDB", defaults)
 
+    --@do-not-package@
     Chronicler:RegisterChatCommand("chrondebug", "DebugHandler")
+    --@end-do-not-package@
     Chronicler:RegisterChatCommand("chron", "CommandHandler")
     Chronicler:InitConfig()
 
