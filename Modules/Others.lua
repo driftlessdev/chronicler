@@ -96,7 +96,10 @@ function Chronicler:HandleAchievement(_eventName, achievementID, alreadyEarned)
         return
     end
 
-    local message = { string.format(TXT["Earned %s for %s points!"], name, points)}
+    local link = GetAchievementLink(achievementID) or string.format("|cnACHIEVEMENT_COLOR:%s|r",name)
+
+    local pointsColor = string.format("|cnINCREASE_STAT_COLOR:%s|r",points)
+    local message = { string.format(TXT["Earned %s for %s points!"], link, pointsColor)}
 
     self:QueueScreenshot(message)
 
@@ -118,8 +121,11 @@ function Chronicler:HandleDeath()
     end
 
     local count = self.db.char.deathData.count + 1
-    self.db.char.deathData.count = count
-    local message = string.format(TXT["Death #%s as level %s"],count, curLevel)
+    if not self.session.testDeath then
+    self.db.char.deathData.count = count    
+    end
+    
+    local message = string.format(TXT["Death |cnDECREASE_STAT_COLOR:#%s|r as level %s"],count, self:ColorLevelText(curLevel))
     local messages = {}
     Chronicler:TraceFormat("Death msg: %s",message)
     if settings.showCount then   
