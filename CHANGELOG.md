@@ -1,4 +1,4 @@
 # Changelog
 
-## Misc
-- Packager support
+## Changed
+- Color screensbot messages

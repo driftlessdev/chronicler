@@ -7,14 +7,19 @@ function Chronicler:DebugHandler(command)
         self.session.testLevel = true
         Chronicler:levelUpHandler("PLAYER_LEVEL_UP",UnitLevel("player"))
     elseif command == "death" then
+        self.session.testDeath = true
         Chronicler:HandleDeath()
     elseif command == "dungeon" then
+        Chronicler:HandleBOSS_KILL("MANUAL", 2007, "ENC NAME")
         Chronicler:HandleEncounterEnd(nil, 2007, nil, 1, nil, 1)
     elseif command == "trigger" then
         self:QueueScreenshot({"Manual screenshot trigger"})
     elseif command == "renown" then
         -- Silvermoon Court
         Chronicler:HandleFactionLevelChange("TEST",2710, 10, 9)
+    elseif command == "achieve" then
+        -- Northrend Dungeonmaster
+        Chronicler:HandleAchievement("MANUAL",1288,false)
     end
 end
 --@end-do-not-package@
@@ -100,4 +105,8 @@ function Chronicler:Screenshot()
     self.session.screenshot.messages = {}
     self.session.screenshot.messages[0] = 0
     self.session.screenshot.queued = 0
+end
+
+function Chronicler:ColorLevelText(level)
+    return string.format("|cnINCREASE_STAT_COLOR:%s|r", tostring(level))
 end

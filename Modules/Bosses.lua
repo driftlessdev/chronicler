@@ -189,8 +189,10 @@ function Chronicler:HandleBOSS_KILL(_, encounterId, encounterName)
         return
     end
 
-
-    local message = { string.format(TXT["%s (%s) kill #%s"],encounterName,difficultyName,bossInfo[difficultyId][encounterId]) }
+    local encColoc = string.format("|cnAREA_NAME_FONT_COLOR:%s|r",encounterName)
+    local diffColor = string.format("|cnDIFFICULT_DIFFICULTY_COLOR:%s|r",difficultyName)
+    local countColor = string.format("|cnNEUTRAL_STATUS_COLOR:%s|r",bossInfo[difficultyId][encounterId])
+    local message = { string.format(TXT["%s (%s) kill #%s"],encColoc,diffColor,countColor) }
 
     self:QueueScreenshot(message)
 end
